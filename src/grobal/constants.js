@@ -32,6 +32,22 @@ const NOTE_TO_KEY = {
   b : 'm',
 };
 
+const VALID_KEYS = [
+  'z',
+  's',
+  'x',
+  'd',
+  'c',
+  'v',
+  'g',
+  'b',
+  'h',
+  'n',
+  'j',
+  'm'
+];
+
 export {NOTES};
 export {NOTE_TO_KEY};
 export {KEY_TO_NOTE};
+export {VALID_KEYS};
