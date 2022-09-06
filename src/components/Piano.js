@@ -15,6 +15,7 @@ const Piano = () => {
     window.addEventListener('keyup', handleKeyUp);
   }, []);
 
+  // key down時の処理
   const handleKeyDown = (event) => {
     if (event.repeat) {
       return;
@@ -29,18 +30,16 @@ const Piano = () => {
     console.log(updatedPressedKeys);
   }
 
+  // key up時の処理
   const handleKeyUp = (event) => {
     const index = pressedKeys.indexOf(event.key);
     if (index > -1) {
       setPressedKeys(pressedKeys.splice(index, 1));
-      console.log("a");
     }
-    console.log(pressedKeys);
   }
 
   const playNote = (note) => {
     if (!_.isEmpty(note)) {
-      console.log("play");
       const noteAudio = new Audio(document.getElementById(note).src);
       noteAudio.play();
     }
