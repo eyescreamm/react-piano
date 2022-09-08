@@ -7,34 +7,50 @@ import { VALID_KEYS } from '../grobal/constants.js';
 import { KEY_TO_NOTE } from '../grobal/constants.js';
 
 const Piano = () => {
-  const [pressedKeys, setPressedKeys] = useState([]);
+  const [pressedKeys, setPressedKeys] = useState(() => {
+    console.log("init")
+    return ["ふざけんなよ！"];
+  });
+  const [count, setCount] = useState(1);
   
   // Run only on first render ([] <- Run only on change)
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
   }, []);
 
+
+  console.log("before", pressedKeys)
   // key down時の処理
   const handleKeyDown = (event) => {
+    const c = count + 1
+    setCount(c)
+    // console.log(c)
+    //console.log("inner", pressedKeys)
     if (event.repeat) {
       return;
     }
     const key = event.key;
-    const updatedPressedKeys = pressedKeys;
+    // var updatedPressedKeys = pressedKeys
+    var updatedPressedKeys = pressedKeys.slice(0, pressedKeys.length)
     if (!updatedPressedKeys.includes(key) && VALID_KEYS.includes(key)) {
       updatedPressedKeys.push(key);
+      //console.log("update = " + updatedPressedKeys);
     }
     setPressedKeys(updatedPressedKeys);
     playNote(KEY_TO_NOTE[key]);
-    console.log(updatedPressedKeys);
   }
+  //console.log(pressedKeys);
 
   // key up時の処理
   const handleKeyUp = (event) => {
     const index = pressedKeys.indexOf(event.key);
     if (index > -1) {
-      setPressedKeys(pressedKeys.splice(index, 1));
+      const newKeys = pressedKeys;
+      newKeys.splice(index, 1)
+      console.log(newKeys)
+      setPressedKeys(prevState => newKeys);
+      // setPressedKeys(pressedKeys.splice(index, 1));
     }
   }
 
@@ -50,7 +66,7 @@ const Piano = () => {
       <Key 
         key={index}
         note={note}
-        pressedKeys={pressedKeys}
+        pressedKeys={[]}
       />
     )
   });
