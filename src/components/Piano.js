@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import Key from './Key.js';
 import _ from 'lodash';
 import './Piano.css'; 
@@ -7,52 +7,43 @@ import { VALID_KEYS } from '../grobal/constants.js';
 import { KEY_TO_NOTE } from '../grobal/constants.js';
 
 const Piano = () => {
-  const [pressedKeys, setPressedKeys] = useState(() => {
-    console.log("init")
-    return ["ふざけんなよ！"];
-  });
-  const [count, setCount] = useState(1);
-  
-  // Run only on first render ([] <- Run only on change)
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-  }, []);
+  const [pressedKeys, setPressedKeys] = useState([]);
 
-
-  console.log("before", pressedKeys)
   // key down時の処理
-  const handleKeyDown = (event) => {
-    const c = count + 1
-    setCount(c)
-    // console.log(c)
-    //console.log("inner", pressedKeys)
+  const handleKeyDown = useCallback((event) => {
     if (event.repeat) {
       return;
     }
     const key = event.key;
-    // var updatedPressedKeys = pressedKeys
-    var updatedPressedKeys = pressedKeys.slice(0, pressedKeys.length)
+    var updatedPressedKeys = pressedKeys.slice(0, pressedKeys.length);
     if (!updatedPressedKeys.includes(key) && VALID_KEYS.includes(key)) {
       updatedPressedKeys.push(key);
-      //console.log("update = " + updatedPressedKeys);
     }
     setPressedKeys(updatedPressedKeys);
     playNote(KEY_TO_NOTE[key]);
-  }
-  //console.log(pressedKeys);
+    console.log(updatedPressedKeys)
+  }, [pressedKeys])
 
   // key up時の処理
-  const handleKeyUp = (event) => {
+  const handleKeyUp = useCallback((event) => {
     const index = pressedKeys.indexOf(event.key);
+    console.log(index)
     if (index > -1) {
-      const newKeys = pressedKeys;
+      const newKeys = pressedKeys.slice(0, pressedKeys.length);
       newKeys.splice(index, 1)
-      console.log(newKeys)
-      setPressedKeys(prevState => newKeys);
-      // setPressedKeys(pressedKeys.splice(index, 1));
+      setPressedKeys(newKeys);
     }
-  }
+  }, [pressedKeys])
+
+  // Run only on first render ([] <- Run only on change)
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown, false);
+    document.addEventListener('keyup', handleKeyUp, false);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [pressedKeys, handleKeyDown, handleKeyUp]);
 
   const playNote = (note) => {
     if (!_.isEmpty(note)) {
@@ -66,7 +57,7 @@ const Piano = () => {
       <Key 
         key={index}
         note={note}
-        pressedKeys={[]}
+        pressedKeys={pressedKeys}
       />
     )
   });
