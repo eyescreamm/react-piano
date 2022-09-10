@@ -5,12 +5,12 @@ import { NOTE_TO_KEY } from '../grobal/constants.js';
 
 const Key = (props) => {
 
-  let keyClassName = "key";
+  let keyClassName = "whiteKey";
 
   const noteIsFlat = isFlat(props.note.length);
   const keyIsPressed = isPressed(props.note, props.pressedKeys);
   if (noteIsFlat) {
-    keyClassName += " flat";
+    keyClassName = "blackKey";
   }
   if (keyIsPressed) {
     keyClassName += " pressed";
